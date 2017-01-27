@@ -9,7 +9,6 @@
  * Avoid any system memory considerations by using
  * statically-allocated memory. The free list will start as one block
  * pointing to this statically-allocated chunk.
- * free list is empty.
  */
 static char memory[MEMSIZE];
 
