@@ -1,5 +1,4 @@
 /* A basic memory-allocator */
-#include "new_malloc.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -31,7 +30,6 @@ void *new_malloc(unsigned required_size) {
   /* Make sure required_size is a multiple of sizeof(header), so we
    * can do simpler pointer arithmetic. */
   while ((required_size % sizeof(header)) != 0) required_size++;
-  printf("Required size set at %d\n", required_size);
 
   /* Special case to initialize the free list. */
   if (freep == NULL) {
