@@ -26,7 +26,7 @@ static header *freep = NULL;
 
 
 /* Size is in bytes. As an implementation detail it gets rounded up
- * to increments of 8 bytes, to simplify the bookkeeping. */
+ * to increments of sizeof(header) bytes, to simplify the bookkeeping. */
 void *new_malloc(unsigned required_size) {
   /* Make sure required_size is a multiple of sizeof(header), so we
    * can do simpler pointer arithmetic. */
