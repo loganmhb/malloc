@@ -56,7 +56,7 @@ void *new_malloc(unsigned required_size) {
     /* Now, current should be a big-enough block on the free list. But
      * it might be way too big! Time to cut it down to size and keep
      * what's left for later. */
-    header *new_free_block = current + (required_size / sizeof(header)) + sizeof(header);
+    header *new_free_block = current + 1 + (required_size / sizeof(header));
 
     /* Put the new free block in the free list, in the correct (sorted) position. */
     new_free_block->size = current->size - (required_size + sizeof(header));
@@ -156,7 +156,6 @@ int main() {
   void *ptr = new_malloc(16);
   print_free_list();
   printf("first pointer, to 16 bytes: %p\n", ptr);
-  new_free(ptr);
   print_free_list();
   void *ptr2 = new_malloc(16);
   printf("second pointer, to 18 bytes: %p\n", ptr2);
@@ -170,6 +169,8 @@ int main() {
   print_free_list();
   void *ptr6 = new_malloc(23);
   new_free(ptr4);
+  new_free(ptr);
+  print_free_list();
   new_free(ptr6);
   new_free(ptr5);
   new_free(ptr3);
