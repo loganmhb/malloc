@@ -20,15 +20,16 @@ typedef struct header {
   unsigned size;
 } header;
 
-/* Pointer to the beginning of the free list. */
+/* Pointer to the beginning of the free list. The free list is a
+   series of `header`s, *sorted by memory address* (otherwise
+   everything breaks). */
 static header *free_list = NULL;
 
 
-/* Size is in bytes. As an implementation detail it gets rounded up
- * to increments of sizeof(header) bytes, to simplify the bookkeeping. */
+/* Size is in bytes. As an implementation detail it gets rounded up to
+ * increments of sizeof(header) bytes, to simplify the pointer
+ * arithmetic and bookkeeping. */
 void *new_malloc(unsigned required_size) {
-  /* Make sure required_size is a multiple of sizeof(header), so we
-   * can do simpler pointer arithmetic. */
   while ((required_size % sizeof(header)) != 0) required_size++;
 
   /* Special case to initialize the free list. */
@@ -38,9 +39,9 @@ void *new_malloc(unsigned required_size) {
     free_list->next = NULL;
   }
 
+  /* Find the first big-enough block in the free list. */
   header *current = free_list;
   header *prev = NULL;
-  /* Find the first big-enough block in the free list. */
   while(current->size < required_size) {
     prev = current;
     current = current->next;
@@ -50,7 +51,7 @@ void *new_malloc(unsigned required_size) {
     }
   }
 
-  void *allocated_ptr = current + 1;  // (what we'll return to the caller)
+  void *allocated_ptr = current + 1;  // (what we'll return to the caller, hiding the header)
 
   if (required_size < current->size) {
     /* Now, current should be a big-enough block on the free list. But
@@ -148,31 +149,4 @@ void print_free_list() {
     printf("Header: %p, size %d, next %p\n", ptr, ptr->size, ptr->next);
   } while ((ptr = ptr->next) != NULL && i++ < 10);
   puts("***\n");
-}
-
-
-int main() {
-  printf("Start of memory block: %p\n", memory);
-  void *ptr = new_malloc(16);
-  print_free_list();
-  printf("first pointer, to 16 bytes: %p\n", ptr);
-  print_free_list();
-  void *ptr2 = new_malloc(16);
-  printf("second pointer, to 18 bytes: %p\n", ptr2);
-  void *ptr3 = new_malloc(8);
-  printf("third pointer, to 8 bytes: %p\n", ptr3);
-  printf("free list location: %p\n", free_list);
-  new_free(ptr2);
-
-  void *ptr4 = new_malloc(43);
-  void *ptr5 = new_malloc(5);
-  print_free_list();
-  void *ptr6 = new_malloc(23);
-  new_free(ptr4);
-  new_free(ptr);
-  print_free_list();
-  new_free(ptr6);
-  new_free(ptr5);
-  new_free(ptr3);
-  print_free_list();
 }
