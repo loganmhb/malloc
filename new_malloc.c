@@ -1,4 +1,5 @@
-/* A basic memory-allocator */
+/* A basic memory-allocator, written by Logan Buckley based on the
+   principles of the memory allocator in K&R C */
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -141,6 +142,7 @@ void new_free(void *ptr) {
 }
 
 
+/* Debugging helper to show what's on the free list. */
 void print_free_list() {
   header *ptr = free_list;
   puts("\n*** FREE LIST ***");
